@@ -16,7 +16,6 @@ public class Grid {
 
     private function empty():Array {
         var cells:Array = [];
-
         for (var x:int = 0; x < _size; x++) {
             var row:Array = [];
 
@@ -25,7 +24,6 @@ public class Grid {
             }
             cells[x] = row;
         }
-        //trace(row);
         return cells;
     }
 
@@ -53,8 +51,7 @@ public class Grid {
         var cells:Array = availableCells();
 
         if (cells.length) {
-            var randomIndex:Number = Math.floor(Math.random() * cells.length);
-            return Cell.fromObject(cells[randomIndex]);
+            return cells[ Math.floor(Math.random() * cells.length)];
         }
         return null;
     }

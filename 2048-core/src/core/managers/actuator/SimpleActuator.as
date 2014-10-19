@@ -2,8 +2,6 @@
  * Created by Administator on 19.10.14.
  */
 package core.managers.actuator {
-import core.managers.actuator.IActuator;
-import core.object.Cell;
 import core.object.Grid;
 import core.object.Tile;
 import core.object.model.GameManagerVO;
@@ -24,12 +22,11 @@ public class SimpleActuator extends UIComponent implements IActuator{
     public function continueGame():void {
     }
 
-    public function actuate(grid:Grid, params:GameManagerVO):void {
-        updateGrid(grid);
+    public function actuate(params:GameManagerVO):void {
+        updateGrid(params.grid);
     }
 
     private function updateGrid(grid:Grid):void {
-      //graphics.clear();
         container.removeChildren();
         for (var i:int = 0; i < grid.cells.length; i++) {
             var column:Array = grid.cells[i];

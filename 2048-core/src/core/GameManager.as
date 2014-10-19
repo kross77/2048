@@ -17,7 +17,6 @@ public class GameManager {
     public var inputManager:G2048InputManager;
     public var storageManager:IStorageManager;
     public var actuator:IActuator;
-    public var grid:Grid;
 
     private var _keepPlaying:Boolean;
 
@@ -130,7 +129,7 @@ public class GameManager {
             storageManager.setGameState(serialize());
         }
 
-        actuator.actuate(grid, modelVO);
+        actuator.actuate(modelVO);
     }
 
     /**
@@ -323,6 +322,14 @@ public class GameManager {
 
     public function positionsEqual(first:IPositionObject, second:IPositionObject):Boolean {
         return first.x === second.x && first.y === second.y;
+    }
+
+    public function get grid():Grid {
+        return modelVO.grid;
+    }
+
+    public function set grid(value:Grid):void {
+        modelVO.grid = value;
     }
 }
 }
