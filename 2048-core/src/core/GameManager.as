@@ -2,37 +2,62 @@
  * Created by Administator on 13.10.14.
  */
 package core {
+import core.managers.actuator.IActuator;
+import core.managers.input.G2048InputManager;
+import core.managers.storage.IStorageManager;
 import core.object.Cell;
 import core.object.Grid;
 import core.object.IPositionObject;
 import core.object.Tile;
+import core.object.model.GameManagerVO;
+
+import game.actions.GameAction;
 
 public class GameManager {
-    public var size:int;
-    public var startTiles:int = 2;
-    public var inputManager:IInputManager;
+    public var inputManager:G2048InputManager;
     public var storageManager:IStorageManager;
     public var actuator:IActuator;
     public var grid:Grid;
-    public var score:int;
-    public var over:Boolean;
-    public var won:Boolean;
-    private var _keepPlaying:Boolean;
-    public function GameManager() {
 
+    private var _keepPlaying:Boolean;
+
+    public var modelVO:GameManagerVO;
+
+    public function GameManager(inputManager:G2048InputManager, storageManager:IStorageManager, actuator:IActuator) {
+        this.inputManager = inputManager;
+        this.storageManager = storageManager;
+        this.actuator = actuator;
+        storageManager.clearGameState();
+        actuator.continueGame();
+        inputManager.onActionCallback = inputManagerActionHandler;
+        setup();
+    }
+
+    private function inputManagerActionHandler(type:String, params:Object = null):void {
+        switch (type) {
+            case GameAction.MOVE:
+                move(params as int);
+                break;
+            case GameAction.KEEP_PLAYING:
+                keepPlaying();
+                break;
+            case GameAction.RESTART:
+                restart();
+                break;
+        }
     }
 
 
     /**
      * Restart the game
      */
-    public function restart():void
-    {
+    public function restart():void {
         storageManager.clearGameState();
         actuator.continueGame();
         setup();
 
     }
+
     /**
      * Keep playing after winning (allows going over 2048)
      */
@@ -45,7 +70,7 @@ public class GameManager {
      *  Return true if the game is lost, or has won and the user hasn't kept playing
      */
     public function isGameTerminated():Boolean {
-        return over || (won && !_keepPlaying);
+        return modelVO.over || (modelVO.won && !_keepPlaying);
     }
 
     /**
@@ -53,17 +78,17 @@ public class GameManager {
      */
     public function setup():void {
         var previousState:Object = storageManager.getGameState();
-        if(previousState){
+        if (previousState) {
             grid = new Grid(previousState.grid.size, previousState.grid.cells);
-            score = previousState.score;
-            over = previousState.over;
-            won = previousState.won;
+            modelVO.score = previousState.score;
+            modelVO.over = previousState.over;
+            modelVO.won = previousState.won;
             _keepPlaying = previousState.keepPlaying;
-        }else{
-            grid = new Grid(size);
-            score = 0;
-            over = false;
-            won = false;
+        } else {
+            grid = new Grid(modelVO.size);
+            modelVO.score = 0;
+            modelVO.over = false;
+            modelVO.won = false;
             _keepPlaying = false;
         }
         addStartTiles();
@@ -72,12 +97,12 @@ public class GameManager {
 
     /**
      *  Set up the initial tiles to start the game with
-      */
-    public function addStartTiles() {
-        for (var i = 0; i < this.startTiles; i++) {
+     */
+    public function addStartTiles():void {
+        for (var i:int = 0; i < modelVO.startTiles; i++) {
             addRandomTile();
         }
-    };
+    }
 
     /**
      * Adds a tile in a random position
@@ -94,24 +119,18 @@ public class GameManager {
      * Sends the updated grid to the actuator
      */
     private function actuate():void {
-        if (storageManager.getBestScore() < score) {
-            storageManager.setBestScore(score);
+        if (storageManager.getBestScore() < modelVO.score) {
+            storageManager.setBestScore(modelVO.score);
         }
 
-        // Clear the state when the game is over (game over only, not win)
-        if (over) {
+        // Clear the state when the game is modelVO.over (game modelVO.over only, not win)
+        if (modelVO.over) {
             storageManager.clearGameState();
         } else {
             storageManager.setGameState(serialize());
         }
 
-        actuator.actuate(grid, {
-            score:      score,
-            over:       over,
-            won:        won,
-            bestScore:  storageManager.getBestScore(),
-            terminated: isGameTerminated()
-        });
+        actuator.actuate(grid, modelVO);
     }
 
     /**
@@ -120,10 +139,10 @@ public class GameManager {
      */
     private function serialize():Object {
         return {
-            grid:        grid.serialize(),
-            score:       score,
-            over:        over,
-            won:         won,
+            grid: grid.serialize(),
+            score: modelVO.score,
+            over: modelVO.over,
+            won: modelVO.won,
             keepPlaying: keepPlaying
         };
     }
@@ -138,7 +157,7 @@ public class GameManager {
                         tile.mergedFrom = null;
                         tile.savePosition();
                     }
-        });
+                });
     }
 
     /**
@@ -158,29 +177,31 @@ public class GameManager {
      */
     public function move(direction:int):void {
         var self:GameManager = this;
-        if(isGameTerminated()){return}
+        if (isGameTerminated()) {
+            return
+        }
         var cell:Cell, tile:Tile;
 
-        var vector:Object     = getVector(direction);
+        var vector:Object = getVector(direction);
         var traversals:Object = buildTraversals(vector);
-        var moved:Boolean      = false;
+        var moved:Boolean = false;
 
         // Save the current tile positions and remove merger information
         prepareTiles();
 
         // Traverse the grid in the right direction and move tiles
-        traversals.x.forEach(function (x:int):void {
-            traversals.y.forEach(function (y:int):void {
-                cell = { x: x, y: y };
+        traversals.x.forEach(function (x:int, ...rect):void {
+            traversals.y.forEach(function (y:int, ...rect):void {
+                cell = Cell.fromObject({ x: x, y: y });
                 tile = self.grid.cellContent(cell);
 
                 if (tile) {
                     var positions:Object = self.findFarthestPosition(cell, vector);
-                    var next:Tile      = self.grid.cellContent(positions.next);
+                    var next:Tile = self.grid.cellContent(positions.next);
 
                     // Only one merger per row traversal?
                     if (next && next.value === tile.value && !next.mergedFrom) {
-                        var merged = new Tile(positions.next, tile.value * 2);
+                        var merged:Tile = new Tile(positions.next, tile.value * 2);
                         merged.mergedFrom = [tile, next];
 
                         self.grid.insertTile(merged);
@@ -190,10 +211,10 @@ public class GameManager {
                         tile.updatePosition(positions.next);
 
                         // Update the score
-                        self.score += merged.value;
+                        self.modelVO.score += merged.value;
 
                         // The mighty 2048 tile
-                        if (merged.value === 2048) self.won = true;
+                        if (merged.value === 2048) self.modelVO.won = true;
                     } else {
                         self.moveTile(tile, positions.farthest);
                     }
@@ -209,7 +230,7 @@ public class GameManager {
             addRandomTile();
 
             if (!movesAvailable()) {
-                over = true; // Game over!
+                modelVO.over = true; // Game over!
             }
 
             actuate();
@@ -224,9 +245,9 @@ public class GameManager {
      */
     private function getVector(direction:int):Object {
         var map:Array = [
-            { x: 0,  y: -1 }, // Up
-            { x: 1,  y: 0 },  // Right
-            { x: 0,  y: 1 },  // Down
+            { x: 0, y: -1 }, // Up
+            { x: 1, y: 0 },  // Right
+            { x: 0, y: 1 },  // Down
             { x: -1, y: 0 }   // Left
         ];
         return map[direction];
@@ -240,7 +261,7 @@ public class GameManager {
     private function buildTraversals(vector:Object):Object {
         var traversals:Object = { x: [], y: [] };
 
-        for (var pos = 0; pos < size; pos++) {
+        for (var pos:int = 0; pos < modelVO.size; pos++) {
             traversals.x.push(pos);
             traversals.y.push(pos);
         }
@@ -278,16 +299,16 @@ public class GameManager {
 
         var tile:Tile;
 
-        for (var x:int = 0; x < this.size; x++) {
-            for (var y:int = 0; y < this.size; y++) {
-                tile = grid.cellContent({ x: x, y: y });
+        for (var x:int = 0; x < modelVO.size; x++) {
+            for (var y:int = 0; y < modelVO.size; y++) {
+                tile = grid.cellContent(Cell.fromObject({ x: x, y: y }));
 
                 if (tile) {
                     for (var direction:int = 0; direction < 4; direction++) {
                         var vector:Object = self.getVector(direction);
-                        var cell:Cell   = Cell.fromObject({ x: x + vector.x, y: y + vector.y });
+                        var cell:Cell = Cell.fromObject({ x: x + vector.x, y: y + vector.y });
 
-                        var other:Tile  = self.grid.cellContent(cell);
+                        var other:Tile = self.grid.cellContent(cell);
 
                         if (other && other.value === tile.value) {
                             return true; // These two tiles can be merged

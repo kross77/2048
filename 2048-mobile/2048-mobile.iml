@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="Flex" version="4">
-  <component name="FlexBuildConfigurationManager" active="2048-vk">
+  <component name="FlexBuildConfigurationManager" active="2048-mobile">
     <configurations>
-      <configuration name="2048-vk" main-class="Main" output-file="Main.swf" output-folder="$MODULE_DIR$/../out/production/2048-vk" use-html-wrapper="true" wrapper-template-path="$MODULE_DIR$/html-template">
-        <dependencies target-player="11.2">
+      <configuration name="2048-mobile" target-platform="Mobile" main-class="Main" output-file="Main.swf" output-folder="$MODULE_DIR$/../out/production/2048-mobile">
+        <dependencies>
           <entries>
             <entry module-name="2048-core" build-configuration-name="2048">
               <dependency linkage="Merged" />
@@ -13,8 +13,8 @@
         </dependencies>
         <compiler-options />
         <packaging-air-desktop />
-        <packaging-android />
-        <packaging-ios />
+        <packaging-android enabled="true" use-generated-descriptor="false" custom-descriptor-path="$MODULE_DIR$/Main-app.xml" package-file-name="2048-mobile" />
+        <packaging-ios package-file-name="2048-mobile" />
       </configuration>
     </configurations>
     <compiler-options />

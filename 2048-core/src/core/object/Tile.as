@@ -6,8 +6,6 @@ import flash.geom.Point;
 
 public class Tile implements IPositionObject{
     public var mergedFrom:*;
-    private var _x:int;
-    private var _y:int;
     public var value:int;
     public var position:IPositionObject;
     public var previousPosition:Position;
@@ -18,27 +16,26 @@ public class Tile implements IPositionObject{
     }
 
     public function savePosition():void {
-        previousPosition = Position.convert({ x: _x, y: _y });
+        previousPosition = Position.convert({ x: position.x, y: position.y });
     }
 
     public function updatePosition(cell:Cell):void {
-        _x = position.x;
-        _y = position.y;
+        position = new Position(cell.x, cell.y);
     }
 
     public function get x():int {
-        return _x;
+        return position.x;
     }
 
     public function get y():int {
-        return _y;
+        return position.y;
     }
 
     public function serialize():Object{
         return{
             position:{
-                x: _x,
-                y: _y
+                x: position.x,
+                y: position.y
             },
             value: this.value
         }

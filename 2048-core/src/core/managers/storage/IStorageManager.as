@@ -1,7 +1,7 @@
 /**
  * Created by Administator on 13.10.14.
  */
-package core {
+package core.managers.storage {
 public interface IStorageManager {
     function clearGameState():void;
 

@@ -53,7 +53,8 @@ public class Grid {
         var cells:Array = availableCells();
 
         if (cells.length) {
-            return cells[Math.floor(Math.random() * cells.length)];
+            var randomIndex:Number = Math.floor(Math.random() * cells.length);
+            return Cell.fromObject(cells[randomIndex]);
         }
         return null;
     }

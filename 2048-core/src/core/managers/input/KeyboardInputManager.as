@@ -1,14 +1,14 @@
 /**
  * Created by Administator on 19.10.14.
  */
-package core.managers {
-import core.IInputManager;
+package core.managers.input {
+import core.managers.input.IInputManager;
 
 import flash.display.Stage;
 import flash.events.EventDispatcher;
 import flash.events.KeyboardEvent;
 
-public class KeyboardInputManager extends EventDispatcher implements IInputManager{
+public class KeyboardInputManager extends G2048InputManager{
 
     private var mapMove:Object = {
     38: 0, // Up
@@ -26,7 +26,7 @@ public class KeyboardInputManager extends EventDispatcher implements IInputManag
 };
     private var stage:Stage;
     public function KeyboardInputManager() {
-
+        super();
     }
 
     public function init(stage:Stage):void{
@@ -39,25 +39,12 @@ public class KeyboardInputManager extends EventDispatcher implements IInputManag
 
         if(mapMove[event.keyCode] !== undefined){
             var direction:int = mapMove[event.keyCode];
-            registerMove(direction);
+            move(direction);
         }
 
         if(event.keyCode == 82){
-            registerRestart();
+            restart();
         }
-
-    }
-
-    public function registerRestart():void {
-        trace('restart');
-    }
-
-    public function registerMove(direction:int):void {
-        trace('move: '+direction);
-    }
-
-    public function registerKeepPlaying():void
-    {
 
     }
 }
