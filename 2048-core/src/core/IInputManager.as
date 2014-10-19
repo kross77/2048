@@ -3,6 +3,8 @@
  */
 package core {
 public interface IInputManager {
-
+    function restart():void
+    function move(direction:int   ):void
+    function keepPlaying():void
 }
 }

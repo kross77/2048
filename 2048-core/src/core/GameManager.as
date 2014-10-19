@@ -3,6 +3,8 @@
  */
 package core {
 import core.object.Cell;
+import core.object.Grid;
+import core.object.IPositionObject;
 import core.object.Tile;
 
 public class GameManager {
@@ -15,11 +17,15 @@ public class GameManager {
     public var score:int;
     public var over:Boolean;
     public var won:Boolean;
-    public var keepPlaying:Boolean;
+    private var _keepPlaying:Boolean;
     public function GameManager() {
 
     }
 
+
+    /**
+     * Restart the game
+     */
     public function restart():void
     {
         storageManager.clearGameState();
@@ -27,7 +33,24 @@ public class GameManager {
         setup();
 
     }
+    /**
+     * Keep playing after winning (allows going over 2048)
+     */
+    public function keepPlaying():void {
+        _keepPlaying = true;
+        this.actuator.continueGame(); // Clear the game won/lost message
+    }
 
+    /**
+     *  Return true if the game is lost, or has won and the user hasn't kept playing
+     */
+    public function isGameTerminated():Boolean {
+        return over || (won && !_keepPlaying);
+    }
+
+    /**
+     * Set up the game
+     */
     public function setup():void {
         var previousState:Object = storageManager.getGameState();
         if(previousState){
@@ -35,18 +58,79 @@ public class GameManager {
             score = previousState.score;
             over = previousState.over;
             won = previousState.won;
-            keepPlaying = previousState.keepPlaying;
+            _keepPlaying = previousState.keepPlaying;
         }else{
             grid = new Grid(size);
             score = 0;
             over = false;
             won = false;
-            keepPlaying = false;
+            _keepPlaying = false;
         }
         addStartTiles();
         actuate();
     }
 
+    /**
+     *  Set up the initial tiles to start the game with
+      */
+    public function addStartTiles() {
+        for (var i = 0; i < this.startTiles; i++) {
+            addRandomTile();
+        }
+    };
+
+    /**
+     * Adds a tile in a random position
+     */
+    private function addRandomTile():void {
+        if (grid.cellsAvailable()) {
+            var value:int = Math.random() < 0.9 ? 2 : 4;
+            var tile:Tile = new Tile(grid.randomAvailableCell(), value);
+            grid.insertTile(tile);
+        }
+    }
+
+    /**
+     * Sends the updated grid to the actuator
+     */
+    private function actuate():void {
+        if (storageManager.getBestScore() < score) {
+            storageManager.setBestScore(score);
+        }
+
+        // Clear the state when the game is over (game over only, not win)
+        if (over) {
+            storageManager.clearGameState();
+        } else {
+            storageManager.setGameState(serialize());
+        }
+
+        actuator.actuate(grid, {
+            score:      score,
+            over:       over,
+            won:        won,
+            bestScore:  storageManager.getBestScore(),
+            terminated: isGameTerminated()
+        });
+    }
+
+    /**
+     * Represent the current game as an object
+     * @return  the current game as an object
+     */
+    private function serialize():Object {
+        return {
+            grid:        grid.serialize(),
+            score:       score,
+            over:        over,
+            won:         won,
+            keepPlaying: keepPlaying
+        };
+    }
+
+    /**
+     * Save all tile positions and remove merger info
+     */
     public function prepareTiles():void {
         grid.eachCell(
                 function (x:int, y:int, tile:Tile):void {
@@ -57,12 +141,21 @@ public class GameManager {
         });
     }
 
+    /**
+     * Move a tile and its representation
+     * @param tile
+     * @param cell
+     */
     public function moveTile(tile:Tile, cell:Cell):void {
         grid.cells[tile.x][tile.y] = null;
         grid.cells[cell.x][cell.y] = tile;
         tile.updatePosition(cell);
     }
 
+    /**
+     * Move tiles on the grid in the specified direction
+     * @param direction         specified direction
+     */
     public function move(direction:int):void {
         var self:GameManager = this;
         if(isGameTerminated()){return}
@@ -124,6 +217,26 @@ public class GameManager {
 
     }
 
+    /**
+     * Get the vector representing the chosen direction
+     * @param direction
+     * @return
+     */
+    private function getVector(direction:int):Object {
+        var map:Array = [
+            { x: 0,  y: -1 }, // Up
+            { x: 1,  y: 0 },  // Right
+            { x: 0,  y: 1 },  // Down
+            { x: -1, y: 0 }   // Left
+        ];
+        return map[direction];
+    }
+
+    /**
+     * Build a list of positions to traverse in the right order
+     * @param vector
+     * @return
+     */
     private function buildTraversals(vector:Object):Object {
         var traversals:Object = { x: [], y: [] };
 
@@ -137,72 +250,6 @@ public class GameManager {
         if (vector.y === 1) traversals.y = traversals.y.reverse();
 
         return traversals;
-    }
-
-    private function getVector(direction:int):Object {
-        var map:Array = [
-            { x: 0,  y: -1 }, // Up
-            { x: 1,  y: 0 },  // Right
-            { x: 0,  y: 1 },  // Down
-            { x: -1, y: 0 }   // Left
-        ];
-        return map[direction];
-    }
-
-
-    private function addStartTiles():void {
-        for (var i:int = 0; i < startTiles; i++) {
-            addRandomTile();
-        }
-    }
-
-    private function addRandomTile():void {
-        if (grid.cellsAvailable()) {
-            var value:int = Math.random() < 0.9 ? 2 : 4;
-            var tile = new Tile(grid.randomAvailableCell(), value);
-            grid.insertTile(tile);
-        }
-    }
-
-
-
-    private function actuate():void {
-        if (storageManager.getBestScore() < score) {
-            storageManager.setBestScore(score);
-        }
-
-        // Clear the state when the game is over (game over only, not win)
-        if (over) {
-            storageManager.clearGameState();
-        } else {
-            storageManager.setGameState(serialize());
-        }
-
-        actuator.actuate(grid, {
-            score:      score,
-            over:       over,
-            won:        won,
-            bestScore:  storageManager.getBestScore(),
-            terminated: isGameTerminated()
-        });
-    }
-
-    private function isGameTerminated():Boolean {
-        return over || (won && !keepPlaying);
-    }
-
-    /**
-     * Represent the current game as an object
-     * @return  the current game as an object
-     */
-    private function serialize():Object {
-        return {
-            grid:        grid.serialize(),
-            score:       score,
-            over:        over,
-            won:         won,
-            keepPlaying: keepPlaying
-        };
     }
 
 
@@ -220,6 +267,41 @@ public class GameManager {
             farthest: previous,
             next: cell // Used to check if a merge is required
         };
+    }
+
+    public function movesAvailable():Boolean {
+        return grid.cellsAvailable() || tileMatchesAvailable();
+    }
+
+    public function tileMatchesAvailable():Boolean {
+        var self:GameManager = this;
+
+        var tile:Tile;
+
+        for (var x:int = 0; x < this.size; x++) {
+            for (var y:int = 0; y < this.size; y++) {
+                tile = grid.cellContent({ x: x, y: y });
+
+                if (tile) {
+                    for (var direction:int = 0; direction < 4; direction++) {
+                        var vector:Object = self.getVector(direction);
+                        var cell:Cell   = Cell.fromObject({ x: x + vector.x, y: y + vector.y });
+
+                        var other:Tile  = self.grid.cellContent(cell);
+
+                        if (other && other.value === tile.value) {
+                            return true; // These two tiles can be merged
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function positionsEqual(first:IPositionObject, second:IPositionObject):Boolean {
+        return first.x === second.x && first.y === second.y;
     }
 }
 }
