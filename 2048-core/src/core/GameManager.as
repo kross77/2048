@@ -20,7 +20,7 @@ public class GameManager {
 
     private var _keepPlaying:Boolean;
 
-    public var modelVO:GameManagerVO;
+    public var modelVO:GameManagerVO = new GameManagerVO();
 
     public function GameManager(inputManager:G2048InputManager, storageManager:IStorageManager, actuator:IActuator) {
         this.inputManager = inputManager;

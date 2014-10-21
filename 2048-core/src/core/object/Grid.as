@@ -51,7 +51,7 @@ public class Grid {
         var cells:Array = availableCells();
 
         if (cells.length) {
-            return cells[ Math.floor(Math.random() * cells.length)];
+            return Cell.fromObject(cells[ Math.floor(Math.random() * cells.length)]);
         }
         return null;
     }
@@ -149,6 +149,10 @@ public class Grid {
 
     public function get cells():Array {
         return _cells;
+    }
+
+    public function get size():int {
+        return _size;
     }
 }
 }

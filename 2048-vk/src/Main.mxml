@@ -18,5 +18,7 @@
             addElement(actuator);
         }
         ]]></fx:Script>
+
+    <fx:Style source="css/style.css"/>
     <!--<s:Button click="Alert.show('Hello, world')" label="Say Hello"/>-->
 </s:Application>

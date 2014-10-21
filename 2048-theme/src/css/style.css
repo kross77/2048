@@ -1,0 +1,16 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace ui "core.managers.actuator.ui.*";
+
+
+
+ui|Grid{
+    backgroundColor: #bbada0;
+    cornerRadius: '4';
+    borderWeight: '14';
+}
+
+.rect{
+    backgroundColor: #ccc0b3;
+    cornerRadius: "4";
+}
