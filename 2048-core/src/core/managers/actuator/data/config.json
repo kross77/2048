@@ -3,7 +3,7 @@
         "background": "0xbbada0",
         "cornerRadius": 8,
         "borderWeight": 14,
-        "rect":{
+                "rect":{
             "width": 100,
             "height": 100,
             "background": "0xccc0b3",

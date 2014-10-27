@@ -5,7 +5,7 @@ package core.object {
 import flash.geom.Point;
 
 public class Tile implements IPositionObject{
-    public var mergedFrom:*;
+    public var mergedFrom:Array;
     public var value:int;
     public var position:IPositionObject;
     public var previousPosition:Position;

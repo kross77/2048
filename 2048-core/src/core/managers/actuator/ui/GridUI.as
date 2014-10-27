@@ -4,6 +4,8 @@
 package core.managers.actuator.ui {
 import core.object.Grid;
 
+import flash.events.Event;
+
 import mx.core.UIComponent;
 
 public class GridUI extends UIComponent {
@@ -45,7 +47,9 @@ public class GridUI extends UIComponent {
 
         //draw background rectangle
         graphics.beginFill(background);
-        graphics.drawRoundRect(0, 0, borderWeight + (rect.width + borderWeight) * grid.size, borderWeight + (rect.height + borderWeight) * grid.size, cornerRadius, cornerRadius);
+        var width:int =  this.width = borderWeight + (rect.width + borderWeight) * grid.size;
+        var height:int = this.height = borderWeight + (rect.height + borderWeight) * grid.size;
+        graphics.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
         //draw empty rectangles
         for (var i:int = 0; i < _grid.size; i++) {
             for (var j:int = 0; j < _grid.size; j++) {
@@ -53,6 +57,10 @@ public class GridUI extends UIComponent {
             }
         }
 
+    }
+
+    public function get grid():Grid {
+        return _grid;
     }
 }
 }

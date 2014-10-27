@@ -4,7 +4,9 @@
 package core.managers.actuator {
 import core.object.model.GameManagerVO;
 
-public interface IActuator {
+import mx.core.IUIComponent;
+
+public interface IActuator extends IUIComponent{
     function continueGame():void;
     function actuate(params:GameManagerVO):void;
 }

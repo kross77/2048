@@ -22,10 +22,14 @@
             var storageManager:StorageManager = new StorageManager();
             var actuator:IActuator = new JSONActuator();
             var gm:GameManager = new GameManager(keyboardInputManager, storageManager, actuator);
-            if(actuator is UIComponent){
+            if (actuator is UIComponent) {
                 addElement(actuator as UIComponent);
             }
         }
+
+
+
+
         ]]></fx:Script>
 
     <!--<fx:Style source="/css/style.css"/>-->
