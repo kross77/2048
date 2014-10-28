@@ -3,6 +3,7 @@
  */
 package core.managers.actuator {
 import com.greensock.TweenLite;
+import com.greensock.easing.Ease;
 
 import core.object.Tile;
 
@@ -34,17 +35,18 @@ public class TileSprite extends Sprite {
     }
 
 
-    public function show():void {
+    public function show(animationType:Ease = null, animationTime:Number = .3):void {
         this.width = this.height = 0;
         this.alpha = 0;
         this.x += cellParamWidth / 2;
         this.y += cellParamHeight / 2;
-        TweenLite.to(this, .3, {
+        TweenLite.to(this, animationTime, {
             alpha: 1,
             width: cellParamWidth,
             height: cellParamHeight,
-            x: x-cellParamWidth/2,
-            y: y-cellParamHeight/2
+            x: this.x - cellParamWidth / 2,
+            y: this.y - cellParamHeight / 2,
+            ease: animationType
         });
     }
 

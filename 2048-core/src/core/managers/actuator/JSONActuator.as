@@ -2,7 +2,14 @@
  * Created by Administator on 21.10.14.
  */
 package core.managers.actuator {
+import animation.easy.MergeEase;
+
 import com.greensock.TweenLite;
+import com.greensock.easing.Ease;
+import com.greensock.easing.Elastic;
+import com.greensock.easing.Expo;
+import com.greensock.easing.Power0;
+import com.greensock.easing.Power1;
 
 import core.managers.actuator.ui.GridUI;
 import core.object.Grid;
@@ -22,6 +29,8 @@ import flash.utils.setTimeout;
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
 
+import spark.components.Label;
+
 public class JSONActuator extends UIComponent implements IActuator {
     [Embed(source="data/config.json", mimeType="application/octet-stream")]
     private var ConfigJsonFile:Class;
@@ -31,6 +40,7 @@ public class JSONActuator extends UIComponent implements IActuator {
 
     private var jsonParams:Object;
     private var mergeAnimation:Array = [];
+    private var scoreLabel:TextField = new TextField();
 
     public function JSONActuator() {
         var bytes:ByteArray = new ConfigJsonFile();
@@ -43,6 +53,7 @@ public class JSONActuator extends UIComponent implements IActuator {
         addChild(gridUI);
         container = new Sprite();
         addChild(container);
+        addChild(scoreLabel);
     }
 
     public function continueGame():void {
@@ -53,88 +64,11 @@ public class JSONActuator extends UIComponent implements IActuator {
         if(gridUI.grid == null || grid.size != gridUI.grid.size){
             gridUI.redraw(grid);
         }
-        updateGrid(grid);
+
+        gridUI.updateGrid(grid);
+        scoreLabel.text = String(params.score);
 
     }
-
-    private function updateGrid(grid:Grid):void {
-        container.removeChildren();
-        for (var i:int = 0; i < grid.cells.length; i++) {
-            var column:Array = grid.cells[i];
-            for (var j:int = 0; j < column.length; j++) {
-
-                var tile:Tile = column[j];
-                var tileSprite:TileSprite = createTile(tile, i, j);
-                if(tileSprite){
-                    var isNewTile:Boolean = tile.previousPosition == null;
-
-                    TweenLite.to(tileSprite, .5, {x: columPosition(i), y: rowPositon(j)});
-                    if(isNewTile){
-                        if(tile.mergedFrom == null){
-                            setTimeout(tileSprite.show, .5);
-                        }else{
-                            tileSprite.show();
-                        }
-
-                    }
-                }
-
-            }
-
-        }
-    }
-
-    private function createTile(tile:Tile, column:int, row:int):TileSprite {
-
-        if (tile) {
-            var graficTile:TileSprite = createFromTile(tile);
-            //see if we have merged
-            if(tile.mergedFrom){
-                var tile1:Tile = tile.mergedFrom[0];
-                var tile2:Tile = tile.mergedFrom[1];
-                var s1:TileSprite = createTile(tile1, tile1.x, tile1.y);
-                var s2:TileSprite = createTile(tile2, tile2.x, tile2.y);
-  //              mergeAnimation.push([s1, .5, {x: columPosition(column), y: rowPositon(row)}]);
-//                mergeAnimation.push([s2, .5, {x: columPosition(column), y: rowPositon(row)}]);
-               TweenLite.to(s1, .5, {x: columPosition(column), y: rowPositon(row)});
-                TweenLite.to(s2, .5, {x: columPosition(column), y: rowPositon(row)});
-            }
-            if(tile.previousPosition){
-                graficTile.x = columPosition(tile.previousPosition.x);
-                graficTile.y = rowPositon(tile.previousPosition.y);
-            }else{
-                graficTile.x = columPosition(column);
-                graficTile.y = rowPositon(row);
-            }
-
-            container.addChild(graficTile);
-            return graficTile;
-        }
-
-        return null;
-
-
-    }
-
-    private function rowPositon(row:int):int {
-        var cellParams:Object = jsonParams.grid.rect;
-        var gridParams:Object = jsonParams.grid;
-        return gridParams.borderWeight + row * (jsonParams.grid.rect.width + gridParams.borderWeight);
-    }
-
-    private function columPosition(column:int):int {
-        var cellParams:Object = jsonParams.grid.rect;
-        var gridParams:Object = jsonParams.grid;
-        return gridParams.borderWeight + column * (cellParams.width + gridParams.borderWeight);
-    }
-
-    private function createFromTile(tile:Tile):TileSprite {
-        var sprite:TileSprite = new TileSprite();
-        sprite.draw(tile, jsonParams.grid);
-        return sprite;
-    }
-
-
 
     private function creationCompleteHandler(event:FlexEvent):void {
         updateUIPosition();
