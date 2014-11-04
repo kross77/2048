@@ -2,6 +2,10 @@
  * Created by Administator on 13.10.14.
  */
 package core {
+import core.global.GlobalDispatcherSingleton;
+import core.global.GlobalListener;
+import core.global.IGlobalListener;
+import core.global.listeners.GameManagerListener;
 import core.managers.actuator.IActuator;
 import core.managers.input.G2048InputManager;
 import core.managers.storage.IStorageManager;
@@ -13,7 +17,7 @@ import core.object.model.GameManagerVO;
 
 import game.actions.GameAction;
 
-public class GameManager {
+public class GameManager implements IGlobalListener {
     public var inputManager:G2048InputManager;
     public var storageManager:IStorageManager;
     public var actuator:IActuator;
@@ -22,6 +26,9 @@ public class GameManager {
 
     public var modelVO:GameManagerVO = new GameManagerVO();
 
+    private var dispatcher:GlobalDispatcherSingleton;
+    private var _gameManagerListener:GlobalListener;
+
     public function GameManager(inputManager:G2048InputManager, storageManager:IStorageManager, actuator:IActuator) {
         this.inputManager = inputManager;
         this.storageManager = storageManager;
@@ -29,6 +36,9 @@ public class GameManager {
         storageManager.clearGameState();
         actuator.continueGame();
         inputManager.onActionCallback = inputManagerActionHandler;
+
+        dispatcher = GlobalDispatcherSingleton.instance;
+        dispatcher.addGlobalListener(this);
         setup();
     }
 
@@ -330,6 +340,15 @@ public class GameManager {
 
     public function set grid(value:Grid):void {
         modelVO.grid = value;
+    }
+
+
+    public function get listener():GlobalListener {
+        if(!_gameManagerListener){
+            _gameManagerListener = new GameManagerListener(this);
+        }
+
+        return _gameManagerListener;
     }
 }
 }

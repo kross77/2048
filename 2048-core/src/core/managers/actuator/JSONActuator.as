@@ -11,6 +11,8 @@ import com.greensock.easing.Expo;
 import com.greensock.easing.Power0;
 import com.greensock.easing.Power1;
 
+import core.global.GlobalDispatcherSingleton;
+
 import core.managers.actuator.ui.GridUI;
 import core.object.Grid;
 import core.object.Tile;
@@ -48,8 +50,10 @@ public class JSONActuator extends UIComponent implements IActuator {
         trace(json);
         jsonParams = JSON.parse(json);
         gridUI.setParamsFromObject(jsonParams.grid);
-        addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
+        GlobalDispatcherSingleton.instance.addGlobalListener(gridUI);
+
+        addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         addChild(gridUI);
         container = new Sprite();
         addChild(container);
@@ -60,13 +64,18 @@ public class JSONActuator extends UIComponent implements IActuator {
     }
 
     public function actuate(params:GameManagerVO):void {
+
         var grid:Grid = params.grid;
+
         if(gridUI.grid == null || grid.size != gridUI.grid.size){
             gridUI.redraw(grid);
         }
 
         gridUI.updateGrid(grid);
         scoreLabel.text = String(params.score);
+        if(params.over){
+            gridUI.disable();
+        }
 
     }
 

@@ -4,17 +4,26 @@
 package core.managers.actuator.ui {
 import animation.easy.MergeEase;
 
+import com.bit101.components.PushButton;
+
 import com.greensock.TweenLite;
+
+import core.event.GameEvent;
+import core.global.GlobalListener;
+import core.global.IGlobalListener;
+import core.global.globalEvent;
+import core.global.listeners.GridUIGlobalListener;
 
 import core.managers.actuator.TileSprite;
 import core.object.Grid;
 import core.object.Tile;
 import flash.display.Sprite;
+import flash.events.MouseEvent;
 import flash.utils.setTimeout;
-
 import mx.core.UIComponent;
+import spark.components.Button;
 
-public class GridUI extends UIComponent {
+public class GridUI extends UIComponent implements IGlobalListener{
     public var background:uint;
     public var cornerRadius:int;
     public var borderWeight:int;
@@ -22,9 +31,33 @@ public class GridUI extends UIComponent {
     private var container:Sprite = new Sprite();
     private var _grid:Grid;
     private var jsonGridParams:Object;
+    private var fadeButton:PushButton = new PushButton();
+    private var fade:Sprite;
+    public var disabled:Boolean;
 
     public function GridUI() {
         addChild(container);
+    }
+
+    private function createFade():void {
+        fade = new Sprite();
+        fade.graphics.beginFill(0xFFFFFF, .8);
+        var width:int =  this.width = borderWeight + (rect.width + borderWeight) * grid.size;
+        var height:int = this.height = borderWeight + (rect.height + borderWeight) * grid.size;
+        fade.graphics.drawRect(0, 0, width, height);
+        addChild(fade);
+        createFadeButton(fade);
+
+        //fade.visible = false;
+    }
+
+    private function createFadeButton(parent:Sprite):void {
+        fadeButton.label = "Play";
+        fadeButton.x = (parent.width - fadeButton.width)/2;
+        fadeButton.y = (parent.height - fadeButton.height)/2;
+        parent.addChild(fadeButton);
+
+        fadeButton.addEventListener(MouseEvent.CLICK, fadeButtonClickHandler);
     }
 
     public function setParamsFromObject(params:Object):void {
@@ -51,7 +84,11 @@ public class GridUI extends UIComponent {
     }
 
     public function redraw(grid:Grid):void {
+
         _grid = grid;
+        if(!fade){
+            createFade();
+        }
         graphics.clear();
 
         //draw background rectangle
@@ -73,6 +110,9 @@ public class GridUI extends UIComponent {
     }
 
     public function updateGrid(grid:Grid):void {
+        if(disabled){
+            enable();
+        }
         container.removeChildren();
         for (var i:int = 0; i < grid.cells.length; i++) {
             var column:Array = grid.cells[i];
@@ -143,6 +183,38 @@ public class GridUI extends UIComponent {
         var sprite:TileSprite = new TileSprite();
         sprite.draw(tile, jsonGridParams);
         return sprite;
+    }
+
+
+
+    public function disable():void {
+        fade.alpha = 0;
+        fade.visible = true;
+        TweenLite.to(fade, .5, {alpha: 1});
+        disabled = true;
+    }
+
+    public function enable():void {
+        TweenLite.to(fade, .5, {
+            alpha: 0,
+            onComplete: function():void{
+                    fade.visible = false;
+                    disabled = false;
+                }
+            }
+        );
+    }
+
+    private function fadeButtonClickHandler(event:MouseEvent):void {
+        globalEvent(GameEvent.RESTART);
+    }
+
+    private var _gridUIGlobalListener:GridUIGlobalListener;
+    public function get listener():GlobalListener {
+        if(!_gridUIGlobalListener) {
+            _gridUIGlobalListener = new GridUIGlobalListener(this);
+        }
+        return _gridUIGlobalListener;
     }
 }
 }

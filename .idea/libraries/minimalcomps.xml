@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="minimalcomps" type="flex">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/minimalcomps.swc!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../../flex/libs/minimalcomps/src" />
+    </SOURCES>
+  </library>
+</component>

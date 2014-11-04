@@ -1,0 +1,65 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="541" measuredH="997" mockupW="481" mockupH="977">
+  <controls>
+    <control controlID="10" controlTypeID="com.balsamiq.mockups::Image" x="121" y="324" w="359" h="368" measuredW="548" measuredH="549" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>http%3A//upload.wikimedia.org/wikipedia/commons/6/64/2048_Screenshot.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="11" controlTypeID="com.balsamiq.mockups::iPhone" x="60" y="20" w="481" h="977" measuredW="282" measuredH="573" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <model>IPhone5</model>
+      </controlProperties>
+    </control>
+    <control controlID="12" controlTypeID="com.balsamiq.mockups::Label" x="141" y="207" w="-1" h="-1" measuredW="143" measuredH="36" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>28</size>
+        <text>Brain%20World</text>
+      </controlProperties>
+    </control>
+    <control controlID="13" controlTypeID="com.balsamiq.mockups::Label" x="137" y="243" w="-1" h="-1" measuredW="151" measuredH="68" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>60</size>
+        <text>2048</text>
+      </controlProperties>
+    </control>
+    <control controlID="14" controlTypeID="com.balsamiq.mockups::Button" x="377" y="291" w="-1" h="-1" measuredW="87" measuredH="27" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>New%20Game</text>
+      </controlProperties>
+    </control>
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::IconLabel" x="416" y="219" w="-1" h="-1" measuredW="48" measuredH="63" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Friends</text>
+      </controlProperties>
+    </control>
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::IconLabel" x="353" y="219" w="-1" h="-1" measuredW="53" measuredH="63" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Progress</text>
+      </controlProperties>
+    </control>
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::FieldSet" x="138" y="332" w="326" h="341" measuredW="200" measuredH="170" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0.75</backgroundAlpha>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="20" controlTypeID="__group__" x="220" y="391" w="162" h="224" measuredW="162" measuredH="224" zOrder="8" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Button" x="0" y="145" w="-1" h="-1" measuredW="162" measuredH="36" zOrder="0" locked="false" isInGroup="20">
+          <controlProperties>
+            <size>28</size>
+            <text>New%20Game</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Button" x="44" y="196" w="75" h="28" measuredW="75" measuredH="28" zOrder="1" locked="false" isInGroup="20">
+          <controlProperties>
+            <size>20</size>
+            <text>Guide</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Webcam" x="0" y="0" w="162" h="130" measuredW="177" measuredH="146" zOrder="2" locked="false" isInGroup="20"/>
+      </groupChildrenDescriptors>
+    </control>
+  </controls>
+</mockup>
