@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!--
+  Created by a.krasovsky on 11.11.2014.
+-->
+<s:Group width="100%" height="100%" contentBackgroundColor="#fffdbf" implements="core.managers.actuator.IActuator"
+         xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:actuator="core.managers.actuator.*">
+
+    <fx:Script><![CDATA[
+        import com.greensock.TweenLite;
+
+        import core.event.GameEvent;
+
+        import core.global.globalEvent;
+
+        import core.object.model.GameManagerVO;
+
+        [Bindable]
+        public var score:int;
+
+        public function continueGame():void {
+            jsonActuator.continueGame();
+        }
+
+        public function actuate(params:GameManagerVO):void {
+            //scoreLabel.text = String(params.score);
+            TweenLite.to(this, .5, {score: params.score});
+            jsonActuator.actuate(params);
+        }
+        ]]></fx:Script>
+
+
+    <s:VGroup verticalCenter="0" horizontalCenter="0">
+        <s:Group width="100%">
+            <s:Label text="2048" fontSize="60" left="10" top="10"/>
+            <s:HGroup top="10"
+                      right="10">
+                <s:VGroup
+                        contentBackgroundColor="#8d864d"
+                        paddingTop="10"
+                        paddingBottom="10"
+                        paddingLeft="20"
+                        paddingRight="20"
+                        >
+                    <s:Label text="Score"/>
+                    <s:Label text="{score}"/>
+                </s:VGroup>
+            </s:HGroup>
+
+        </s:Group>
+        <s:HGroup paddingBottom="30">
+            <s:Label fontSize="12" text="Practice mode: " fontWeight="bold"/>
+            <s:Label fontSize="12" text="you have option to undo your last move" />
+        </s:HGroup>
+        <s:Group width="100%">
+            <s:Button label="Restart" left="0" mouseDown="{globalEvent(GameEvent.RESTART)}"/>
+            <s:Button label="Undo" right="0" mouseDown="{globalEvent(GameEvent.UNDO)}"/>
+        </s:Group>
+        <actuator:JSONActuator id="jsonActuator"/>
+    </s:VGroup>
+
+
+</s:Group>

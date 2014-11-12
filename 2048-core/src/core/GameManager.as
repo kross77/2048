@@ -350,5 +350,9 @@ public class GameManager implements IGlobalListener {
 
         return _gameManagerListener;
     }
+
+    public function undo():void {
+
+    }
 }
 }

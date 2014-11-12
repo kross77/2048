@@ -57,7 +57,7 @@ public class JSONActuator extends UIComponent implements IActuator {
         addChild(gridUI);
         container = new Sprite();
         addChild(container);
-        addChild(scoreLabel);
+       // addChild(scoreLabel);
     }
 
     public function continueGame():void {
@@ -76,6 +76,8 @@ public class JSONActuator extends UIComponent implements IActuator {
         if(params.over){
             gridUI.disable();
         }
+        this.width = gridUI.width;
+        this.height = gridUI.height;
 
     }
 
@@ -84,11 +86,14 @@ public class JSONActuator extends UIComponent implements IActuator {
     }
 
     private function updateUIPosition():void {
-        if (systemManager) {
+       /* if (systemManager) {
             var stage:Stage = systemManager.stage;
             gridUI.x = container.x = (stage.stageWidth - gridUI.width) / 2;
             gridUI.y = container.y = (stage.stageHeight - gridUI.height) / 2;
-        }
+        }*/
+
+        //gridUI.x = container.x = (- gridUI.width) / 2;
+        //gridUI.y = container.y = (- gridUI.height) / 2;
     }
 }
 }

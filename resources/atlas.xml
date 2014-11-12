@@ -1,0 +1,27 @@
+<ta>
+	<texture name="atlas.png" w="1024" h="128" />
+	<rects>
+		<rect
+			name="background"
+			hint=""
+			rl="0" rt="0" rr="123" rb="123"
+			ox="0" oy="0"
+			cl="0" ca="0"
+			cr="255" cg="0" cb="0" />
+		<rect
+			name="emty-cell"
+			hint=""
+			rl="123" rt="0" rr="246" rb="123"
+			ox="0" oy="0"
+			cl="0" ca="0"
+			cr="255" cg="0" cb="0" />
+		<rect
+			name="cell2"
+			hint=""
+			rl="246" rt="0" rr="369" rb="123"
+			ox="0" oy="0"
+			cl="0" ca="0"
+			cr="255" cg="0" cb="0" />
+	</rects>
+</ta>
+

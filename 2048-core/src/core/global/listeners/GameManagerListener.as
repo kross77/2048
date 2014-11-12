@@ -12,6 +12,11 @@ public class GameManagerListener extends GlobalListener {
         this.gm = gameManager;
         super(gameManager);
         add(restartCallback, GameEvent.RESTART);
+        add(undoCallback, GameEvent.UNDO);
+    }
+
+    private function undoCallback(data:Object = null):void {
+        gm.undo();
     }
 
     private function restartCallback(data:Object = null):void {
