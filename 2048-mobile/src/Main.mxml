@@ -6,6 +6,7 @@
         import core.managers.actuator.IActuator;
         import core.managers.actuator.JSONActuator;
         import core.managers.actuator.SimpleActuator;
+        import core.managers.input.GestureInputManager;
         import core.managers.input.KeyboardInputManager;
         import core.managers.storage.StorageManager;
 
@@ -18,11 +19,11 @@
         import spark.components.Alert;
 
         private function creationCompleteHandler(event:FlexEvent):void {
-            var keyboardInputManager:KeyboardInputManager = new KeyboardInputManager();
-            keyboardInputManager.init(systemManager.stage);
+            var inputManager:GestureInputManager = new GestureInputManager();
+            inputManager.init(systemManager.stage);
             var storageManager:StorageManager = new StorageManager();
             var actuator:IActuator = new GameActuator();
-            var gm:GameManager = new GameManager(keyboardInputManager, storageManager, actuator);
+            var gm:GameManager = new GameManager(inputManager, storageManager, actuator);
             if (actuator is UIComponent) {
                 addElement(actuator as UIComponent);
             }
