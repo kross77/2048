@@ -17,6 +17,9 @@ import core.global.listeners.GridUIGlobalListener;
 import core.managers.actuator.TileSprite;
 import core.object.Grid;
 import core.object.Tile;
+
+import flash.display.DisplayObject;
+import flash.display.Shape;
 import flash.display.Sprite;
 import flash.events.MouseEvent;
 import flash.utils.setTimeout;
@@ -28,18 +31,28 @@ public class GridUI extends UIComponent implements IGlobalListener{
     public var cornerRadius:int;
     public var borderWeight:int;
     public var rect:GridEmptyRectangleUI = new GridEmptyRectangleUI();
-    private var container:Sprite = new Sprite();
-    private var _grid:Grid;
-    private var jsonGridParams:Object;
-    private var fadeButton:PushButton = new PushButton();
-    private var fade:Sprite;
+    protected var container:Sprite = new Sprite();
+    protected var _grid:Grid;
+    protected var jsonGridParams:Object;
+    protected var fadeButton:PushButton = new PushButton();
+    protected var fade:Sprite;
+    
+    protected var emptyLayer:Shape;
     public var disabled:Boolean;
 
     public function GridUI() {
+        init();
+        emptyLayer = new Shape();
+        addChild(emptyLayer);
         addChild(container);
+
     }
 
-    private function createFade():void {
+    protected function init():void {
+
+    }
+
+    protected function createFade():void {
         fade = new Sprite();
         fade.graphics.beginFill(0xFFFFFF, .8);
         var width:int =  this.width = borderWeight + (rect.width + borderWeight) * grid.size;
@@ -99,7 +112,7 @@ public class GridUI extends UIComponent implements IGlobalListener{
         //draw empty rectangles
         for (var i:int = 0; i < _grid.size; i++) {
             for (var j:int = 0; j < _grid.size; j++) {
-                rect.drawIn(graphics, i, j, borderWeight);
+                rect.drawIn(emptyLayer.graphics, i, j, borderWeight);
             }
         }
 
@@ -119,11 +132,11 @@ public class GridUI extends UIComponent implements IGlobalListener{
             for (var j:int = 0; j < column.length; j++) {
 
                 var tile:Tile = column[j];
-                var tileSprite:TileSprite = createTile(tile, i, j);
+                var tileSprite:ITileDisplayObject = createTile(tile, i, j);
                 if(tileSprite){
                     var isNewTile:Boolean = tile.previousPosition == null;
                     if(isNewTile){
-                        if(tile.mergedFrom == null){
+                        if(tile.mergedFrom == null && tile.hasOwnProperty("show")){
                             tileSprite.alpha = 0;
                             setTimeout(tileSprite.show, 200);
                         }else{
@@ -139,16 +152,16 @@ public class GridUI extends UIComponent implements IGlobalListener{
         }
     }
 
-    private function createTile(tile:Tile, column:int, row:int):TileSprite {
+    private function createTile(tile:Tile, column:int, row:int):ITileDisplayObject {
 
         if (tile) {
-            var graficTile:TileSprite = createFromTile(tile);
+            var graficTile:ITileDisplayObject = createFromTile(tile);
             //see if we have merged
             if(tile.mergedFrom){
                 var tile1:Tile = tile.mergedFrom[0];
                 var tile2:Tile = tile.mergedFrom[1];
-                var s1:TileSprite = createTile(tile1, tile1.x, tile1.y);
-                var s2:TileSprite = createTile(tile2, tile2.x, tile2.y);
+                var s1:ITileDisplayObject = createTile(tile1, tile1.x, tile1.y);
+                var s2:ITileDisplayObject = createTile(tile2, tile2.x, tile2.y);
                 //              mergeAnimation.push([s1, .5, {x: columPosition(column), y: rowPositon(row)}]);
 //                mergeAnimation.push([s2, .5, {x: columPosition(column), y: rowPositon(row)}]);
                 TweenLite.to(s1, .5, {x: columPosition(column), y: rowPositon(row)});
@@ -162,7 +175,12 @@ public class GridUI extends UIComponent implements IGlobalListener{
                 graficTile.y = rowPositon(row);
             }
 
-            container.addChild(graficTile);
+            if(graficTile is DisplayObject){
+                container.addChild(graficTile as DisplayObject);
+            }else{
+                throw new Error("tile isn't DisplayObject, and can't added to container");
+            }
+
             return graficTile;
         }
 
@@ -179,7 +197,7 @@ public class GridUI extends UIComponent implements IGlobalListener{
         return borderWeight + column * (rect.width + borderWeight);
     }
 
-    private function createFromTile(tile:Tile):TileSprite {
+    protected function createFromTile(tile:Tile):ITileDisplayObject {
         var sprite:TileSprite = new TileSprite();
         sprite.draw(tile, jsonGridParams);
         return sprite;

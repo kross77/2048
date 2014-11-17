@@ -5,6 +5,8 @@ package core.managers.actuator {
 import com.greensock.TweenLite;
 import com.greensock.easing.Ease;
 
+import core.managers.actuator.ui.ITileDisplayObject;
+
 import core.object.Tile;
 
 import flash.display.Sprite;
@@ -12,7 +14,7 @@ import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
 
-public class TileSprite extends Sprite {
+public class TileSprite extends Sprite implements ITileDisplayObject{
     private var gridExternalParams:Object;
 
     public function TileSprite() {

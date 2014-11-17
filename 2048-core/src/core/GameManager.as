@@ -28,6 +28,7 @@ public class GameManager implements IGlobalListener {
 
     private var dispatcher:GlobalDispatcherSingleton;
     private var _gameManagerListener:GlobalListener;
+    private var _serialize:Object;
 
     public function GameManager(inputManager:G2048InputManager, storageManager:IStorageManager, actuator:IActuator) {
         this.inputManager = inputManager;
@@ -86,20 +87,20 @@ public class GameManager implements IGlobalListener {
      * Set up the game
      */
     public function setup():void {
-        var previousState:Object = storageManager.getGameState();
+        /*var previousState:Object = storageManager.getGameState(0);
         if (previousState) {
             grid = new Grid(previousState.grid.size, previousState.grid.cells);
             modelVO.score = previousState.score;
             modelVO.over = previousState.over;
             modelVO.won = previousState.won;
             _keepPlaying = previousState.keepPlaying;
-        } else {
+        } else {*/
             grid = new Grid(modelVO.size);
             modelVO.score = 0;
             modelVO.over = false;
             modelVO.won = false;
             _keepPlaying = false;
-        }
+       // }
         addStartTiles();
         actuate();
     }
@@ -147,13 +148,14 @@ public class GameManager implements IGlobalListener {
      * @return  the current game as an object
      */
     private function serialize():Object {
-        return {
+        _serialize = {
             grid: grid.serialize(),
             score: modelVO.score,
             over: modelVO.over,
             won: modelVO.won,
             keepPlaying: keepPlaying
-        };
+        }
+        return _serialize;
     }
 
     /**
@@ -352,7 +354,15 @@ public class GameManager implements IGlobalListener {
     }
 
     public function undo():void {
-
+        var previousState:Object = storageManager.undo(_serialize);
+        if (previousState) {
+            grid = new Grid(previousState.grid.size, previousState.grid.cells);
+            modelVO.score = previousState.score;
+            modelVO.over = previousState.over;
+            modelVO.won = previousState.won;
+            _keepPlaying = previousState.keepPlaying;
+        }
+        actuator.actuate(modelVO)
     }
 }
 }

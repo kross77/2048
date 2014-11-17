@@ -3,14 +3,15 @@
  */
 package core.managers.storage {
 public class StorageManager implements IStorageManager {
+    public var steps:Array = [];
     public function StorageManager() {
     }
 
     public function clearGameState():void {
     }
 
-    public function getGameState():Object {
-        return null;
+    public function getGameState(step:int = 0):Object {
+        return steps[steps.length-step];
     }
 
     public function getBestScore():int {
@@ -21,6 +22,13 @@ public class StorageManager implements IStorageManager {
     }
 
     public function setGameState(state:Object):void {
+        steps.push(state);
+    }
+
+    public function undo(serialize:Object):Object {
+        var state:Object = steps.pop();
+        if(serialize != state){ return state };
+        return steps.pop();
     }
 }
 }

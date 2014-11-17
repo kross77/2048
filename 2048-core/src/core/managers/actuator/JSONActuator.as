@@ -12,6 +12,7 @@ import com.greensock.easing.Power0;
 import com.greensock.easing.Power1;
 
 import core.global.GlobalDispatcherSingleton;
+import core.managers.actuator.ui.GridBitmapUI;
 
 import core.managers.actuator.ui.GridUI;
 import core.object.Grid;
@@ -36,7 +37,7 @@ import spark.components.Label;
 public class JSONActuator extends UIComponent implements IActuator {
     [Embed(source="data/config.json", mimeType="application/octet-stream")]
     private var ConfigJsonFile:Class;
-    private var gridUI:GridUI = new GridUI();
+    private var gridUI:GridBitmapUI = new GridBitmapUI();
 
     private var container:Sprite;
 

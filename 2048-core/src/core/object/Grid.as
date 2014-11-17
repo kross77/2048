@@ -2,13 +2,10 @@
  * Created by Administator on 14.10.14.
  */
 package core.object {
-import core.object.Cell;
-import core.object.IPositionObject;
-import core.object.Tile;
-
 public class Grid {
     private var _cells:Array;
     private var _size:int;
+
     public function Grid(size:int, previousState:Object = null) {
         _size = size;
         _cells = previousState ? fromState(previousState) : empty();
@@ -34,13 +31,16 @@ public class Grid {
             var row:Array = cells[x] = [];
 
             for (var y:int = 0; y < _size; y++) {
-                var tile:Tile = state[x][y];
+                var tile:Tile = null;
+                var obj:Object = state[x][y];
+                if (obj) {
+                    tile = new Tile(obj.position, obj.value);
+                }
                 row.push(tile ? new Tile(tile.position, tile.value) : null);
             }
         }
         return cells;
     }
-
 
 
     /**
