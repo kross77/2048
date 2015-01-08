@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+  Created by a.krasovsky on 08.01.2015.
+-->
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:view="game.clansofcrash.editor.view.*" creationComplete="creationCompleteHandler(event)">
+
+
+  <view:EditorViewport mapData="{map}" width="100%" height="100%"/>
+
+
+  <fx:Script><![CDATA[
+    import mx.events.FlexEvent;
+
+    private var map:Array = [
+      [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0, 0, 0, 0, 0]];
+
+    private function creationCompleteHandler(event:FlexEvent):void{
+
+       }
+    ]]></fx:Script>
+</s:Application>
